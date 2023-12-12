@@ -6,6 +6,7 @@ const tagSchema = new Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     isDeleted: {
       type: Boolean,
@@ -22,10 +23,12 @@ const detailsSchema = new Schema(
     level: {
       type: String,
       required: true,
+      trim: true,
     },
     description: {
       type: String,
       required: true,
+      trim: true,
     },
   },
   {
@@ -40,15 +43,18 @@ const courseSchema = new Schema<TCourse>(
       required: true,
       unique: true,
       index: true,
+      trim: true,
     },
     instructor: {
       type: String,
       required: true,
+      trim: true,
     },
     categoryId: {
       type: Schema.Types.ObjectId,
       ref: 'Category',
       required: true,
+      trim: true,
     },
     price: {
       type: Number,
@@ -61,18 +67,22 @@ const courseSchema = new Schema<TCourse>(
     startDate: {
       type: String,
       required: true,
+      trim: true,
     },
     endDate: {
       type: String,
       required: true,
+      trim: true,
     },
     language: {
       type: String,
       required: true,
+      trim: true,
     },
     provider: {
       type: String,
       required: true,
+      trim: true,
     },
     durationInWeeks: {
       type: Number,
