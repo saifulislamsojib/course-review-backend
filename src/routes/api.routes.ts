@@ -1,11 +1,12 @@
+import categoryRoutes from '@/modules/category/category.routes';
 import { Router } from 'express';
 
 const apiRoutes = Router();
 
 const moduleRoutes = [
   {
-    path: '/users',
-    route: apiRoutes,
+    path: '/categories',
+    route: categoryRoutes,
   },
 ];
 

@@ -96,6 +96,6 @@ const courseSchema = new Schema<TCourse>(
   { timestamps: true },
 );
 
-const CourseModel = model<TCourse>('Course', courseSchema);
+const Course = model<TCourse>('Course', courseSchema);
 
-export default CourseModel;
+export default Course;
