@@ -1,0 +1,9 @@
+node_modules/*
+dist
+*.local
+.env
+package.json
+README.md
+.env.example
+tsconfig.json
+.vscode
