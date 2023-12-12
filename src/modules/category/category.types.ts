@@ -1,8 +1,8 @@
 import { Schema } from 'mongoose';
 
-interface TCategory {
+type TCategory = {
   _id: Schema.Types.ObjectId;
   name: string;
-}
+};
 
 export default TCategory;
