@@ -4,7 +4,7 @@ type TResponse<T extends object, U extends object> = {
   success: boolean;
   statusCode: number;
   message: string;
-  data?: T;
+  data: T;
   meta?: U;
 };
 
@@ -13,10 +13,8 @@ const sendResponse = <T extends object, U extends object>(res: Response, data: T
     success: data.success,
     statusCode: data.statusCode,
     message: data.message,
+    data: data.data,
   };
-  if (data.data) {
-    response.data = data.data;
-  }
   if (data.meta) {
     response.meta = data.meta;
   }

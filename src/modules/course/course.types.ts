@@ -23,6 +23,8 @@ type TCourse = {
   provider: string;
   durationInWeeks: number;
   details: Details;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export default TCourse;
