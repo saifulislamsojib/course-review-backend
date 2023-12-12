@@ -6,9 +6,7 @@ import { AnyZodObject } from 'zod';
 const validateRequest = (schema: AnyZodObject): RequestHandler => {
   // validation check
   return catchAsync(async (req, _res, next) => {
-    await schema.parseAsync({
-      body: req.body,
-    });
+    await schema.parseAsync(req.body);
     next();
   });
 };

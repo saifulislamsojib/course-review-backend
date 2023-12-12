@@ -9,6 +9,7 @@ export const createCourse: RequestHandler = catchAsync(async (req, res) => {
   const data = { ...response.toObject() };
   delete data.createdAt;
   delete data.updatedAt;
+  delete data.__v;
   return sendResponse(res, {
     success: true,
     statusCode: CREATED,

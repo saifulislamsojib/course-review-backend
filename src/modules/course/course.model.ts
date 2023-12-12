@@ -1,6 +1,5 @@
 import { Schema, model } from 'mongoose';
 import TCourse from './course.types';
-import { calculateDurationInWeeks } from './course.utils';
 
 const tagSchema = new Schema(
   {
@@ -98,9 +97,5 @@ const courseSchema = new Schema<TCourse>(
 );
 
 const Course = model<TCourse>('Course', courseSchema);
-
-courseSchema.pre('save', function setDurationInWeeksBeforeSave() {
-  this.durationInWeeks = calculateDurationInWeeks(this.startDate, this.endDate);
-});
 
 export default Course;

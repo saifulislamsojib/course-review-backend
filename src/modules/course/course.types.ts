@@ -25,6 +25,7 @@ type TCourse = {
   details: Details;
   createdAt?: Date;
   updatedAt?: Date;
+  __v?: number;
 };
 
 export default TCourse;
