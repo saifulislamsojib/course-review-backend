@@ -5,6 +5,8 @@ export const calculateDurationInWeeks = (startDate: string | Date, endDate: stri
   const start = new Date(startDate);
   const end = new Date(endDate);
 
-  const durationInWeeks = differenceInWeeks(end, start, { roundingMethod: 'ceil' });
+  const durationInWeeks = differenceInWeeks(end, start, {
+    roundingMethod: 'ceil',
+  });
   return durationInWeeks;
 };
