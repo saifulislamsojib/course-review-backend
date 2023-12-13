@@ -1,8 +1,13 @@
+import AppError from '@/errors/AppError';
 import catchAsync from '@/utils/catchAsync';
 import sendResponse from '@/utils/sendResponse';
 import { RequestHandler } from 'express';
-import { CREATED, OK } from 'http-status';
-import { createCourseToDb, getPaginatedAndFilteredCoursesFromDb } from './course.service';
+import { CREATED, NOT_FOUND, OK } from 'http-status';
+import {
+  createCourseToDb,
+  getPaginatedAndFilteredCoursesFromDb,
+  updateCourseIntoDb,
+} from './course.service';
 
 export const createCourse: RequestHandler = catchAsync(async (req, res) => {
   const response = await createCourseToDb(req.body);
@@ -25,5 +30,18 @@ export const getPaginatedAndFilteredCourses: RequestHandler = catchAsync(async (
     statusCode: OK,
     message: 'Courses retrieved successfully',
     ...result,
+  });
+});
+
+export const updateCourse: RequestHandler = catchAsync(async (req, res) => {
+  const data = await updateCourseIntoDb(req.params.courseId, req.body);
+  if (!data) {
+    throw new AppError(NOT_FOUND, 'Course not found');
+  }
+  return sendResponse(res, {
+    success: true,
+    statusCode: OK,
+    message: 'Course updated successfully',
+    data,
   });
 });

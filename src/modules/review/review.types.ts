@@ -5,6 +5,9 @@ type TReview = {
   courseId: Schema.Types.ObjectId;
   rating: number;
   review: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  __v?: number;
 };
 
 export default TReview;

@@ -1,12 +1,66 @@
-import { FilterQuery, PipelineStage } from 'mongoose';
+import AppError from '@/errors/AppError';
+import { BAD_REQUEST } from 'http-status';
+import { FilterQuery, PipelineStage, UpdateQuery } from 'mongoose';
 import Course from './course.model';
 import TCourse from './course.types';
 import { calculateDurationInWeeks } from './course.utils';
 
-// eslint-disable-next-line arrow-body-style
 export const createCourseToDb = (course: Omit<TCourse, '_id'>) => {
   const durationInWeeks = calculateDurationInWeeks(course.startDate, course.endDate);
   return new Course({ ...course, durationInWeeks }).save();
+};
+
+export const updateCourseIntoDb = (id: string, payload: Partial<TCourse>) => {
+  const { tags, durationInWeeks, details, ...other } = payload;
+  const updateDoc: UpdateQuery<TCourse> = { $set: other };
+  if (tags?.length) {
+    const deletedTags = tags.filter((el) => el.name && el.isDeleted).map((el) => el.name);
+
+    if (deletedTags?.length) {
+      if (!updateDoc.$pull) {
+        updateDoc.$pull = {};
+      }
+      updateDoc.$pull = {
+        tags: { name: { $in: deletedTags } },
+      };
+    }
+
+    const newTags = tags?.filter((el) => el.name && !el.isDeleted);
+
+    if (newTags?.length) {
+      if (!updateDoc.$addToSet) {
+        updateDoc.$addToSet = {};
+      }
+      updateDoc.$addToSet = {
+        tags: newTags,
+      };
+    }
+  }
+  if (durationInWeeks) {
+    if (!other.startDate || !other.endDate) {
+      throw new AppError(
+        BAD_REQUEST,
+        'For update durationInWeeks should be also provide startDate and endDate.',
+      );
+    }
+    const newDurationInWeeks = calculateDurationInWeeks(other.startDate, other.endDate);
+    if (durationInWeeks !== newDurationInWeeks) {
+      throw new AppError(BAD_REQUEST, 'durationInWeeks not matched with startDate and endDate.');
+    }
+    updateDoc.$set!.durationInWeeks = durationInWeeks;
+  }
+  if (details) {
+    if (details.level) {
+      updateDoc.$set!['details.level'] = details.level;
+    }
+    if (details.description) {
+      updateDoc.$set!['details.description'] = details.description;
+    }
+  }
+  return Course.findByIdAndUpdate(id, updateDoc, {
+    new: true,
+    runValidators: true,
+  });
 };
 
 export const getPaginatedAndFilteredCoursesFromDb = async (payload: Record<string, string>) => {
