@@ -1,10 +1,11 @@
-import AppError from '@/errors/AppError';
 import catchAsync from '@/utils/catchAsync';
 import sendResponse from '@/utils/sendResponse';
 import { RequestHandler } from 'express';
-import { CREATED, NOT_FOUND, OK } from 'http-status';
+import { CREATED, OK } from 'http-status';
 import {
   createCourseToDb,
+  getBestCourseFromDb,
+  getCourseByIdWithReviewsFromDb,
   getPaginatedAndFilteredCoursesFromDb,
   updateCourseIntoDb,
 } from './course.service';
@@ -33,15 +34,32 @@ export const getPaginatedAndFilteredCourses: RequestHandler = catchAsync(async (
   });
 });
 
+export const getCourseByIdWithReviews: RequestHandler = catchAsync(async (req, res) => {
+  const data = await getCourseByIdWithReviewsFromDb(req.params.courseId);
+  return sendResponse(res, {
+    success: true,
+    statusCode: OK,
+    message: 'Course and Reviews retrieved successfully',
+    data,
+  });
+});
+
 export const updateCourse: RequestHandler = catchAsync(async (req, res) => {
   const data = await updateCourseIntoDb(req.params.courseId, req.body);
-  if (!data) {
-    throw new AppError(NOT_FOUND, 'Course not found');
-  }
   return sendResponse(res, {
     success: true,
     statusCode: OK,
     message: 'Course updated successfully',
+    data,
+  });
+});
+
+export const getBestCourse: RequestHandler = catchAsync(async (req, res) => {
+  const data = await getBestCourseFromDb();
+  return sendResponse(res, {
+    success: true,
+    statusCode: OK,
+    message: 'Best course retrieved successfully',
     data,
   });
 });

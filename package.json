@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node dist/server.js",
-    "dev": "nodemon --exec \"yarn lint:check && nodemon -r tsconfig-paths/register\" src/server.ts",
+    "dev": "nodemon --exec \"nodemon -r tsconfig-paths/register\" src/server.ts",
     "build": "yarn lint && tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "lint:fix": "eslint ./src --ext .ts --quiet --fix --ignore-path ./.gitignore",
     "lint:check": "eslint ./src --ext .ts --ignore-path ./.gitignore",

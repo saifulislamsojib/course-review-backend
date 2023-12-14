@@ -9,8 +9,9 @@ const globalErrorHandler: ErrorRequestHandler = (err: Error, _req, res, next) =>
     return next('Something went wrong!');
   }
   let statusCode = err instanceof AppError ? err.statusCode : 500;
-  let message = err.message || 'Server Error!';
+  let message = err instanceof AppError ? 'App Error' : err.message || 'Server Error!';
   let errorMessage = err.message || 'Something went wrong!';
+  console.log(err.name, 'name');
 
   if (err instanceof ZodError) {
     message = 'Validation Error';
@@ -19,10 +20,10 @@ const globalErrorHandler: ErrorRequestHandler = (err: Error, _req, res, next) =>
       const lastPath = path?.[path.length - 1];
       return `${acc}${acc ? ' ' : ''}${lastPath} is ${msg?.toLowerCase()}.`;
     }, '');
-  } else if (err instanceof MongooseError.CastError) {
+  } else if (err.name === 'CastError') {
     message = 'Invalid ID';
     statusCode = BAD_REQUEST;
-    errorMessage = `${err.stringValue} is not a valid ID!`;
+    errorMessage = `${(err as MongooseError.CastError).stringValue} is not a valid ID!`;
   } else if ('code' in err && err.code === 11000) {
     const match = err.message.match(/"([^"]*)"/);
     const extractedMessage = match && match[1];
