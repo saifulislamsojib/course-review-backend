@@ -1,7 +1,9 @@
+import AppError from '@/errors/AppError';
 import catchAsync from '@/utils/catchAsync';
 import sendResponse from '@/utils/sendResponse';
 import { RequestHandler } from 'express';
-import { CREATED, OK } from 'http-status';
+import { BAD_REQUEST, CREATED, OK } from 'http-status';
+import { Error as MongooseError } from 'mongoose';
 import {
   createCourseToDb,
   getBestCourseFromDb,
@@ -44,8 +46,17 @@ export const getCourseByIdWithReviews: RequestHandler = catchAsync(async (req, r
   });
 });
 
-export const updateCourse: RequestHandler = catchAsync(async (req, res) => {
-  const data = await updateCourseIntoDb(req.params.courseId, req.body);
+export const updateCourse: RequestHandler = catchAsync(async (req, res, next) => {
+  const { data, error } = await updateCourseIntoDb(req.params.courseId, req.body);
+  if (!data) {
+    if (error instanceof MongooseError.CastError) {
+      return next(error);
+    }
+    throw new AppError(
+      (error as AppError).statusCode || BAD_REQUEST,
+      (error as Error).message || 'Course not updated',
+    );
+  }
   return sendResponse(res, {
     success: true,
     statusCode: OK,
@@ -54,7 +65,7 @@ export const updateCourse: RequestHandler = catchAsync(async (req, res) => {
   });
 });
 
-export const getBestCourse: RequestHandler = catchAsync(async (req, res) => {
+export const getBestCourse: RequestHandler = catchAsync(async (_req, res) => {
   const data = await getBestCourseFromDb();
   return sendResponse(res, {
     success: true,

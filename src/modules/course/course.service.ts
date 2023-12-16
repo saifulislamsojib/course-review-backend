@@ -1,12 +1,6 @@
 import AppError from '@/errors/AppError';
 import { BAD_REQUEST, NOT_FOUND } from 'http-status';
-import {
-  FilterQuery,
-  Error as MongooseError,
-  PipelineStage,
-  UpdateQuery,
-  startSession,
-} from 'mongoose';
+import { FilterQuery, PipelineStage, UpdateQuery, startSession } from 'mongoose';
 import Course from './course.model';
 
 import Review from '../review/review.model';
@@ -42,7 +36,7 @@ export const getBestCourseFromDb = async () => {
       },
     },
     {
-      $sort: { totalReview: -1 },
+      $sort: { reviewCount: -1 },
     },
     {
       $limit: 1,
@@ -73,8 +67,6 @@ export const getBestCourseFromDb = async () => {
 
 export const updateCourseIntoDb = async (id: string, payload: Partial<TCourse>) => {
   const { tags, durationInWeeks, details, ...other } = payload;
-
-  const newTags = tags?.filter((el) => el.name && !el.isDeleted);
 
   const updateDoc: UpdateQuery<TCourse> = { $set: other };
   if (tags?.length) {
@@ -129,6 +121,7 @@ export const updateCourseIntoDb = async (id: string, payload: Partial<TCourse>) 
     }
 
     if (tags?.length) {
+      const newTags = tags.filter((el) => el.name && !el.isDeleted);
       if (newTags?.length) {
         const tagAddUpdateDoc = { $addToSet: { tags: newTags } };
 
@@ -146,17 +139,13 @@ export const updateCourseIntoDb = async (id: string, payload: Partial<TCourse>) 
     await session.commitTransaction();
     await session.endSession();
 
-    return updatedData;
+    updatedData = updatedData.toObject();
+    delete updatedData.__v;
+    return { data: updatedData };
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-    if (error instanceof MongooseError.CastError) {
-      throw new AppError(BAD_REQUEST, error.message, undefined, error.name, error.stringValue);
-    }
-    throw new AppError(
-      (error as AppError).statusCode || BAD_REQUEST,
-      (error as Error).message || 'Course not updated',
-    );
+    return { error };
   }
 };
 

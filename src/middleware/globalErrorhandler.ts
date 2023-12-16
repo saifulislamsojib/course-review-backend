@@ -11,7 +11,6 @@ const globalErrorHandler: ErrorRequestHandler = (err: Error, _req, res, next) =>
   let statusCode = err instanceof AppError ? err.statusCode : 500;
   let message = err instanceof AppError ? 'App Error' : err.message || 'Server Error!';
   let errorMessage = err.message || 'Something went wrong!';
-  console.log(err.name, 'name');
 
   if (err instanceof ZodError) {
     message = 'Validation Error';
