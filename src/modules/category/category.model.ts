@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import TCategory from './category.types';
 
 const categorySchema = new Schema<TCategory>(
@@ -10,10 +10,15 @@ const categorySchema = new Schema<TCategory>(
       index: true,
       trim: true,
     },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
+    },
   },
   { timestamps: true },
 );
 
-const Category = mongoose.model<TCategory>('Category', categorySchema);
+const Category = model<TCategory>('Category', categorySchema);
 
 export default Category;

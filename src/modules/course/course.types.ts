@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import { ObjectId } from 'mongoose';
 
 export type Tag = {
   name: string;
@@ -11,10 +11,10 @@ export type Details = {
 };
 
 type TCourse = {
-  _id: Schema.Types.ObjectId;
+  _id: ObjectId;
   title: string;
   instructor: string;
-  categoryId: Schema.Types.ObjectId;
+  categoryId: ObjectId;
   price: number;
   tags: Tag[];
   startDate: string;
@@ -23,6 +23,7 @@ type TCourse = {
   provider: string;
   durationInWeeks: number;
   details: Details;
+  createdBy: ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
   __v?: number;

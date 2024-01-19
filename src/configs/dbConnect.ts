@@ -4,7 +4,7 @@ import { connect, connection } from 'mongoose';
 // database connection with mongoose
 const mongoConnect = async () => {
   try {
-    await connect(configs.uri);
+    await connect(configs.db_url);
     console.log('Database successfully connected!');
   } catch (error) {
     console.log('Database connection error: ', (error as Error).message);

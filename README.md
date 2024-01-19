@@ -1,24 +1,15 @@
-# Course Review Api
+# Course Review Extended With Authentication
 
-## API Endpoints
-#### 1. Create a Course - /api/course
-Course crete api must provide some data in body `title`, `instructor`, `categoryId`, `price`, `tags` array of object, `startDate`, `endDate`, `language`, `provider` and `details`
+## API Documentation LInk
 
-#### 2. Get Paginated and Filtered Courses - /api/courses
-for paginate `page` & `limit`, for sort `sortBy` & `sortOrder`, `minPrice`, `maxPrice`, `tags`, `startDate`, `endDate`, `language`, `provider`, `durationInWeeks`, `level` in query parameters and all are optional.
+- [https://documenter.getpostman.com/view/31617053/2s9YkuaJyQ](https://documenter.getpostman.com/view/31617053/2s9YkuaJyQ)
 
-#### 3. Create a Category - /api/categories
-Category crete api must provide `name` in body
+## Instructions for local server running
 
-#### 4. Get All Categories - /api/categories
-
-#### 5. Create a Review - /api/reviews
-Review crete api must provide some data in body `courseId`, `rating`, `review`
-
-
-
-
-
-
-
- 
+<ol>
+<li>First ensure to add DB_URI in `env` variable</li>
+<li>Then install necessary dependencies using `yarn install or `npm install`</li>
+<li>To run local server use `yarn dev` command or `npm run dev` command</li>
+<li>To build the project run `yarn build` command or `npm run build` command</li>
+<li>To Lint and format the project run `yarn lint` command or `npm run lint` command</li>
+</ol>

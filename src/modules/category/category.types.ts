@@ -1,8 +1,9 @@
-import { Schema } from 'mongoose';
+import { ObjectId } from 'mongoose';
 
 type TCategory = {
-  _id: Schema.Types.ObjectId;
+  _id: ObjectId;
   name: string;
+  createdBy: ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
 };

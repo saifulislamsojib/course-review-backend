@@ -4,6 +4,7 @@ import { FilterQuery, PipelineStage, UpdateQuery, startSession } from 'mongoose'
 import Course from './course.model';
 
 import Review from '../review/review.model';
+import User from '../user/user.model';
 import TCourse from './course.types';
 import { calculateDurationInWeeks } from './course.utils';
 
@@ -13,12 +14,15 @@ export const createCourseToDb = (course: Omit<TCourse, '_id'>) => {
 };
 
 export const getCourseByIdWithReviewsFromDb = async (id: string) => {
-  const notSelect = ['-__v', '-createdAt', '-updatedAt'];
-  const course = await Course.findById(id).select(notSelect);
+  const notSelect = '-__v';
+  const userSelect = ['_id', 'username', 'email', 'role'];
+  const course = await Course.findById(id).select(notSelect).populate('createdBy', userSelect);
   if (!course?._id) {
     throw new AppError(NOT_FOUND, `Course not found by id ${id}`);
   }
-  const reviews = await Review.find({ courseId: id }).select(notSelect);
+  const reviews = await Review.find({ courseId: id })
+    .select(notSelect)
+    .populate('createdBy', userSelect);
 
   return {
     course,
@@ -47,6 +51,19 @@ export const getBestCourseFromDb = async () => {
         localField: '_id',
         from: 'courses',
         as: 'course',
+        pipeline: [
+          {
+            $lookup: {
+              foreignField: '_id',
+              localField: 'createdBy',
+              from: 'users',
+              as: 'createdBy',
+            },
+          },
+          {
+            $unwind: '$createdBy',
+          },
+        ],
       },
     },
     {
@@ -56,8 +73,12 @@ export const getBestCourseFromDb = async () => {
       $project: {
         _id: 0,
         'course.__v': 0,
-        'course.createdAt': 0,
-        'course.updatedAt': 0,
+        'course.createdBy.createdAt': 0,
+        'course.createdBy.updatedAt': 0,
+        'course.createdBy.__v': 0,
+        'course.createdBy.password': 0,
+        'course.createdBy.passwordHistories': 0,
+        'course.createdBy.passwordUpdatedAt': 0,
       },
     },
   ]);
@@ -141,7 +162,13 @@ export const updateCourseIntoDb = async (id: string, payload: Partial<TCourse>) 
 
     updatedData = updatedData.toObject();
     delete updatedData.__v;
-    return { data: updatedData };
+    const createdBy = await User.findById(updatedData.createdBy).select([
+      '_id',
+      'username',
+      'email',
+      'role',
+    ]);
+    return { data: { ...updatedData, createdBy } };
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
@@ -205,6 +232,17 @@ export const getPaginatedAndFilteredCoursesFromDb = async (payload: Record<strin
     {
       $match: filter,
     },
+    {
+      $lookup: {
+        foreignField: '_id',
+        localField: 'createdBy',
+        from: 'users',
+        as: 'createdBy',
+      },
+    },
+    {
+      $unwind: '$createdBy',
+    },
   ];
 
   if (sortBy) {
@@ -224,6 +262,12 @@ export const getPaginatedAndFilteredCoursesFromDb = async (payload: Record<strin
         {
           $project: {
             __v: 0,
+            'createdBy.createdAt': 0,
+            'createdBy.updatedAt': 0,
+            'createdBy.__v': 0,
+            'createdBy.password': 0,
+            'createdBy.passwordHistories': 0,
+            'createdBy.passwordUpdatedAt': 0,
           },
         },
       ],
@@ -242,6 +286,6 @@ export const getPaginatedAndFilteredCoursesFromDb = async (payload: Record<strin
       limit: limitNumber,
       total: response?.total?.[0]?.count || 0,
     },
-    data: response?.courses,
+    data: { courses: response?.courses },
   };
 };

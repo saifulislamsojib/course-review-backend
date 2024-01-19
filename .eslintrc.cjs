@@ -43,6 +43,7 @@ module.exports = {
     "no-console": 0,
     "linebreak-style": 0,
     "@typescript-eslint/no-non-null-assertion": 0,
+    "arrow-body-style": 0,
     "prettier/prettier": [
       "error",
       {

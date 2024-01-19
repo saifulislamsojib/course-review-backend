@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 
-// eslint-disable-next-line arrow-body-style
 const catchAsync = (requestHandler: RequestHandler): RequestHandler => {
   return async (req, res, next) => {
     try {

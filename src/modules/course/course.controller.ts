@@ -13,10 +13,10 @@ import {
 } from './course.service';
 
 export const createCourse: RequestHandler = catchAsync(async (req, res) => {
+  const userId = req.user?._id;
+  req.body.createdBy = userId;
   const response = await createCourseToDb(req.body);
-  const data = { ...response.toObject() };
-  delete data.createdAt;
-  delete data.updatedAt;
+  const data = response.toObject();
   delete data.__v;
   return sendResponse(res, {
     success: true,
@@ -41,7 +41,7 @@ export const getCourseByIdWithReviews: RequestHandler = catchAsync(async (req, r
   return sendResponse(res, {
     success: true,
     statusCode: OK,
-    message: 'Course and Reviews retrieved successfully',
+    message: 'Course with reviews retrieved successfully',
     data,
   });
 });

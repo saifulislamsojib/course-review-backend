@@ -5,16 +5,15 @@ import { CREATED, OK } from 'http-status';
 import { createCategoryToDb, getAllCategoriesFromDb } from './category.service';
 
 export const createCategory: RequestHandler = catchAsync(async (req, res) => {
-  const { name } = req.body;
-  const data = await createCategoryToDb({ name });
+  req.body.createdBy = req.user?._id;
+  let data = await createCategoryToDb(req.body);
+  data = data.toObject();
+  delete data.__v;
   return sendResponse(res, {
     success: true,
     statusCode: CREATED,
     message: 'Category created successfully',
-    data: {
-      _id: data._id,
-      name: data.name,
-    },
+    data,
   });
 });
 
@@ -24,6 +23,6 @@ export const getAllCategories: RequestHandler = catchAsync(async (req, res) => {
     success: true,
     statusCode: OK,
     message: 'Categories retrieved successfully',
-    data,
+    data: { categories: data },
   });
 });

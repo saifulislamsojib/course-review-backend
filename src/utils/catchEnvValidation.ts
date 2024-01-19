@@ -16,7 +16,7 @@ const catchEnvValidation = async () => {
     await envValidationSchema.parseAsync(process.env);
   } catch (error) {
     console.log('Env validation error =', (error as ZodError).errors);
-    process.exit(0);
+    process.exit(1);
   }
 };
 
